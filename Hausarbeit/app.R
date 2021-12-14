@@ -36,6 +36,7 @@ ui <- dashboardPage(skin = "blue",
         infoBox("7-Tage-Inzidenz", 10 * 2, icon = icon("sort-amount-up"), color = "navy"),
         infoBox("Impfquote", 10 * 2, icon = icon("syringe"), color = "navy"),
         valueBox(30 * 5, "Risiko", icon = icon("biohazard"), color = "red"),
+        infoBox("Hier wird ein Erklärungstext stehen", icon = icon("info"), color = "navy"),
         
       )
   
