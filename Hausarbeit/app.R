@@ -8,29 +8,42 @@
 #
 
 library(shiny)
+library(shinydashboard)
 
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+ui <- dashboardPage(skin = "blue",
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    dashboardHeader(title = "COVID Risiko Rechner"),
+    
 
-    # Sidebar with a slider input for number of bins 
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+      
+      # Sidebar with a slider input
+      dashboardSidebar(
+        radioButtons(inputId = "WellenID", 
+                                label = "Wähle die COVID Welle aus, für die du dein Risiko berechnen möchtest:", 
+                                c("1. Welle" = 1, "2. Welle" = 2, "3. Welle" = 3, "4. Welle" = 4)),
+        selectInput(inputId = "Impfstatus", label = "Ich bin", c("geimpft oder genesen" = "2G", "ungeimpft" = "0G")),
+        selectInput(inputId = "Altersgruppe", label = "in der Altersgruppe", c("0-4", "5-14", "15-34", "35-59", "60-79", "80+")),
+        
+        selectInput(inputId = "Bundesland", label = "und lebe in dem folgenden Bundesland", c("Sachsen", "Sachsen-Anhalt", "Brandenburg", "Berlin", "Schleswig-Holstein", "Niedersachsen", "Bremen", "Hamburg", "Mecklemburg-Vorpommern", "Hessen", "Thüringen", "Baden-Würtemberg", "Nordrhein-Westfalen", "Bayern", "Saarland")),
+        actionButton("Berechnen", icon("refresh"))
         ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-           plotOutput("distPlot")
-        )
-    )
+      
+      # Show a plot of the generated distribution
+      dashboardBody(
+        infoBox("Einwohnerzahl", 10 * 2, icon = icon("users"), color = "navy"),
+        infoBox("7-Tage-Inzidenz", 10 * 2, icon = icon("sort-amount-up"), color = "navy"),
+        infoBox("Impfquote", 10 * 2, icon = icon("syringe"), color = "navy"),
+        valueBox(30 * 5, "Risiko", icon = icon("biohazard"), color = "red"),
+        
+      )
+  
 )
+    
+
+
+
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
