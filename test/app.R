@@ -82,7 +82,7 @@ if (interactive()) {
       infoBox(
         "Verbale Erklärung",
         "Test",
-        icon = icon("quote-right"),
+        icon = icon("comments"),
         color = "navy"
       ),
       
@@ -99,6 +99,12 @@ if (interactive()) {
         plotOutput("intervaldiagram"),
         textOutput("quantile")
       ),
+      infoBox(
+        "Quellen",
+        "Test",
+        icon = icon("quote-right"),
+        color = "navy"
+      ),
       
     )
     
@@ -107,6 +113,26 @@ if (interactive()) {
   
   # Define server logic required to draw a histogram
   server <- function(input, output, session) {
+   # observeEvent(input$niveau, {
+      
+   # })
+    
+  #  observeEvent(input$n, {
+      
+   # })
+    
+  #  observeEvent(input$ewert, {
+      
+     
+   # })
+    
+   # observeEvent(input$sd, {
+      
+   # })
+    
+   # quantil1 <- qnorm((1 - niveau) / 2, ewert, sd / sqrt(n))
+   # quantil2 <- qnorm(1 - (1 - niveau) / 2, ewert, sd / sqrt(n))
+    
     output$datadiagram <- renderPlot({
       # generate bins based on input$bins from ui.R
       hist(rnorm(input$n, input$ewert, input$sd))
@@ -117,11 +143,11 @@ if (interactive()) {
     output$intervalldiagram <- renderPlot({
       # generate bins based on input$bins from ui.R
       hist(rnorm(input$n, input$ewert, input$sd))
-      
+
       # draw the histogram with the specified number of bins
       
     })
-    output$quantile <- renderText("Test text")
+    output$quantile <- renderText("Verteilung von")
     
     observeEvent(input$normierung, {
       if (input$normierung == 1) {
