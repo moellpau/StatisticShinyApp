@@ -36,7 +36,7 @@ if (interactive()) {
         label = "Triff eine Vorauswahl der Normierung:",
         c(
           "IQ (M=100, SD=15)" = 1,
-          "Körpergrößen (M=180, SD=20)" = 2,
+          "Körpergrößen (M=170, SD=10)" = 2,
           "Rendite DAX (M=0, SD=0.05)" = 3,
           "Standard (M=0, SD=1)" = 4
         )
@@ -155,8 +155,8 @@ if (interactive()) {
         updateNumericInput(session, "sd", value = 15)
       }
       else if (input$normierung == 2) {
-        updateNumericInput(session, "ewert", value = 180)
-        updateNumericInput(session, "sd", value = 20)
+        updateNumericInput(session, "ewert", value = 170)
+        updateNumericInput(session, "sd", value = 10)
       }
       else if (input$normierung == 3) {
         updateNumericInput(session, "ewert", value = 0)
