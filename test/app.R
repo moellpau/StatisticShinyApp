@@ -35,10 +35,10 @@ if (interactive()) {
         inputId = "normierung",
         label = "Triff eine Vorauswahl der Normierung:",
         c(
-          "IQ-Werte (M=100, SD=15)" = 1,
-          "T-Werte (M=50, SD=10)" = 2,
+          "IQ-Normalverteilung (M=100, SD=15)" = 1,
+          "Körpergröße-Normalverteilung (M=180, SD=20)" = 2,
           "Standardwerte (M=100, SD=10)" = 3,
-          "z-Werte (M=0, SD=1)" = 4
+          "Standardnormalverteilung (M=0, SD=1)" = 4
         )
       ),
       sliderInput(
@@ -54,7 +54,7 @@ if (interactive()) {
         label = "Erwartungswert",
         value = 100,
         min = 0,
-        max = 100
+        max = 200
       ),
       numericInput(
         inputId = "sd",
@@ -155,8 +155,8 @@ if (interactive()) {
         updateNumericInput(session, "sd", value = 15)
       }
       else if (input$normierung == 2) {
-        updateNumericInput(session, "ewert", value = 50)
-        updateNumericInput(session, "sd", value = 10)
+        updateNumericInput(session, "ewert", value = 180)
+        updateNumericInput(session, "sd", value = 20)
       }
       else if (input$normierung == 3) {
         updateNumericInput(session, "ewert", value = 100)
