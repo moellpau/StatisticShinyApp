@@ -62,6 +62,9 @@ if (interactive()) {
         value = 15,
         min = 1,
         max = 20
+      ),
+      actionButton(
+        "button", "Verteile mich!"
       )
     ),
     
@@ -96,12 +99,12 @@ if (interactive()) {
         title = "Konfidenzintervall",
         solidHeader = TRUE,
         status = "primary",
-        plotOutput("intervaldiagram"),
+        plotOutput("intervalldiagram"),
         textOutput("quantile")
       ),
       infoBox(
         "Quellen",
-        "Test",
+        "https://jonasschemmel.shinyapps.io/Konfidenzintervall-Rechner/",
         icon = icon("quote-right"),
         color = "navy"
       ),
@@ -110,45 +113,49 @@ if (interactive()) {
     
   )
   
+  #g_data <- NULL
   
   # Define server logic required to draw a histogram
   server <- function(input, output, session) {
-   # observeEvent(input$niveau, {
-      
-   # })
+    observeEvent(input$button, {
+      n <- input$n
+      ewert <- input$ewert
+      sd <- input$sd
+      xsd <- sd/sqrt(n)
+      x <- rnorm(n, ewert, sd)
+      niveau <- input$niveau
+      alpha <- 1 - niveau
+      z <- qnorm(1-(alpha/2), ewert, sd)
+      aintervall <- mean(x) - z*(xsd)
+      bintervall <- mean(x) + z*(xsd)
+      data <- data.frame(x, y = dnorm(x, ewert, sd))
+      print(aintervall)
+      print(bintervall)
+      t.test(x)
     
-  #  observeEvent(input$n, {
-      
-   # })
-    
-  #  observeEvent(input$ewert, {
-      
-     
-   # })
-    
-   # observeEvent(input$sd, {
-      
-   # })
-    
-   # quantil1 <- qnorm((1 - niveau) / 2, ewert, sd / sqrt(n))
-   # quantil2 <- qnorm(1 - (1 - niveau) / 2, ewert, sd / sqrt(n))
     
     output$datadiagram <- renderPlot({
       # generate bins based on input$bins from ui.R
-      hist(rnorm(input$n, input$ewert, input$sd))
-      
+      ggplot(data = data,
+             aes(x)) + geom_histogram (color="blue", fill = 'grey') + ylab("Häufigkeit") + xlab("Werte")
       # draw the histogram with the specified number of bins
       
     })
     output$intervalldiagram <- renderPlot({
       # generate bins based on input$bins from ui.R
-      hist(rnorm(input$n, input$ewert, input$sd))
+      ggplot(data = data,
+             aes(x, y)) + geom_line() +
+        geom_vline(aes(xintercept= aintervall), color="red", linetype="dashed", size=1) +
+        geom_vline(aes(xintercept= bintervall), color="blue", linetype="dashed", size=1) + 
+        #geom_area(data = data, aes(y = y), fill = 'cornflowerblue', color = NA, alpha = .3) + 
+        ylab("Dichte") + xlab("Werte")
 
       # draw the histogram with the specified number of bins
       
     })
     output$quantile <- renderText("Verteilung von")
     
+    })
     observeEvent(input$normierung, {
       if (input$normierung == 1) {
         updateNumericInput(session, "ewert", value = 100)
