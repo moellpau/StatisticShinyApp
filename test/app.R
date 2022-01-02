@@ -8,6 +8,7 @@
 #
 
 library(shiny)
+library(shinyjs)
 library(shinydashboard)
 library(ggplot2)
 
@@ -15,7 +16,6 @@ if (interactive()) {
   # Define UI for application that draws a histogram
   ui <- dashboardPage(
     skin = "blue",
-    
     # Application title
     dashboardHeader(title = "KI Rechner"),
     
@@ -26,7 +26,7 @@ if (interactive()) {
       sliderInput(
         inputId = "n",
         label = "Stichprobengröße:",
-        min = 1,
+        min = 0,
         max = 1000,
         value = 500,
         step = 100
@@ -68,13 +68,15 @@ if (interactive()) {
     
     # Show a plot of the generated distribution
     dashboardBody(
+      
+      useShinyjs(),
       fluidRow (
         box(
           title = "Was sind Konfidenzintervalle?",
           "Unter Konfidenzintervallen (KI) sind ein statistische Intervalle zu verstehen, mit welchem man besser einschätzen kann, wo beispielsweise wie in diesem Fall der wahre Mittelwert eines Datensatzes liegt. Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen."
         ),
         box(title = "Erklärung der Berechnung",
-            textOutput("berech_erkl"))
+            uiOutput("berech_erkl"))
       ),
       
       
@@ -109,12 +111,12 @@ if (interactive()) {
           title = "Konfidenzintervall",
           solidHeader = TRUE,
           status = "primary",
-          plotOutput("intervalldiagram")
+          plotOutput("intervalldiagram"),
         )
       ),
       fluidRow (
         box(title = "Verbale Erklärung",
-            textOutput("verbal_erkl")),
+            uiOutput("verbal_erkl")),
         box(
           title = "Quellen",
           "StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021)
@@ -168,6 +170,7 @@ if (interactive()) {
         
       })
       
+      
       output$intervall_a <- renderText({
         paste("a =",round(aintervall, digits = 2))
       })
@@ -180,34 +183,45 @@ if (interactive()) {
         paste(niveau_percentage, "%")
       })
       
-      output$berech_erkl <- renderText({
-        paste(
-          "Für die Findung und Validierung der Intervalle suchen wir einen Intervall von der Untergrenze a bis zur Obergrenze b.",
-          "Die Grenzen dieses Intervalles sollen so ermittelt werden, dass mit",
-          niveau_percentage,
-          "%-iger Wahrscheinlichkeit der echte Mittelwert der Grundgesamtheit in ihnen liegt.",
-          "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte immer normalverteilt sind und wir die Standardabweichung, in diesem Fall",
-          sd,
-          "kennen."
+      output$berech_erkl <- renderUI({
+        tagList(
+          p(
+            "Für die Findung und Validierung der Intervalle suchen wir einen Intervall von der Untergrenze",
+            em("a"),
+            "bis zur Obergrenze",
+            em("b"),
+            ".",
+            "Die Grenzen dieses Intervalles sollen so ermittelt werden, dass mit",
+            strong(niveau_percentage, "%"),
+            "-iger Wahrscheinlichkeit der echte Mittelwert der Grundgesamtheit in ihnen liegt.",
+            br(),
+            "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte immer normalverteilt sind und wir die Standardabweichung, in diesem Fall",
+            strong(sd),
+            "kennen."
+          )
         )
       })
       
-      output$verbal_erkl <- renderText({
-        paste(
-          "Der wahre Mittelwert der Stichprobe von ",
-          n,
-          "Werten befindet sich mit einer Wahrscheinlichkeit von",
-          niveau_percentage,
-          "% innerhalb des Intervalls",
-          round(aintervall, digits = 2),
-          "bis",
-          round(bintervall, digits = 2),
-          "."
+      output$verbal_erkl <- renderUI({
+        tagList(
+          p(
+            "Der wahre Mittelwert der Stichprobe von ",
+            strong(n),
+            "Werten befindet sich mit einer Wahrscheinlichkeit von",
+            strong(niveau_percentage),
+            "% innerhalb des Intervalls",
+            strong(round(aintervall, digits = 2)),
+            "bis",
+            strong(round(bintervall, digits = 2)),
+            "."
+          )
         )
       })
       
     })
     
+    
+    click("verteil_mich_button")
     
     observeEvent(input$normierung, {
       if (input$normierung == 1) {
