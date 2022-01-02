@@ -46,7 +46,7 @@ if (interactive()) {
         "Konfidenzniveau:",
         min = 0.7,
         max = 0.99,
-        value = 0.8,
+        value = 0.95,
         step = 0.01
       ),
       numericInput(
@@ -80,23 +80,23 @@ if (interactive()) {
         "Erklärung der Berechnung"
       )),
       fluidRow (
-      infoBox(
-        "Das Konfidenzniveau ist",
+      valueBox(
         textOutput("konfidenzniveau"),
-        icon = icon("percentage"),
-        color = "navy"
+        p("Konfidenzniveau"),
+        icon = icon("flag-checkered"),
+        color = "light-blue"
       ),
-      infoBox(
-        "Die Untergrenze des Konfidenzintervalls ist",
+      valueBox(
         textOutput("intervall_a"),
-        icon = icon("step-backward"),
-        color = "navy"
+        "Untergrenze des Konfidenzintervalls",
+        icon = icon("less-than-equal"),
+        color = "olive"
       ),
-      infoBox(
-        "Die Obergrenze des Konfidenzintervalls ist",
+      valueBox(
         textOutput("intervall_b"),
-        icon = icon("step-forward"),
-        color = "navy"
+        "Obergrenze des Konfidenzintervalls",
+        icon = icon("greater-than-equal"),
+        color = "olive"
       )),
       fluidRow(
       box(
@@ -165,12 +165,21 @@ if (interactive()) {
       # draw the histogram with the specified number of bins
       
     })
-    output$intervall_a <- renderText(aintervall)
-    output$intervall_b <- renderText(bintervall)
-    output$konfidenzniveau <- renderText(niveau_percentage)
+   
+    output$intervall_a <- renderText({ 
+      paste(round(aintervall, digits = 2))
+    })
+
+    output$intervall_b <- renderText({ 
+      paste(round(bintervall, digits = 2))
+    })
+      
+    output$konfidenzniveau <- renderText({ 
+        paste(niveau_percentage, "%") 
+    })
     
     output$verbal_erkl <- renderText({ 
-      paste("Der wahre Mittelwert der Stichprobe von ", n, "Werten befindet sich mit einer Wahrscheinlichkeit von",  niveau_percentage, "% innerhalb des Intervalls", aintervall, "bis", bintervall) 
+      paste("Der wahre Mittelwert der Stichprobe von ", n, "Werten befindet sich mit einer Wahrscheinlichkeit von",  niveau_percentage, "% innerhalb des Intervalls", round(aintervall, digits = 2), "bis", round(bintervall, digits = 2), ".") 
     })
   
       })
