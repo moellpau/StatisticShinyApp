@@ -114,8 +114,8 @@ if (interactive()) {
       fluidRow (
       box(
         title = "Verbale Erklärung",
-        "Der wahre Mittelwert der Stichprobe von <n> Werten befindet sich mit einer Wahrscheinlichkeit von <niveau> % (Konfidenzniveau) innerhalb des Intervalls <aintervall> und <bintervall>",
-      ),
+        textOutput("verbal_erkl")
+        ),
       box(
         title = "Quellen",
         "StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021)
@@ -169,7 +169,11 @@ if (interactive()) {
     output$intervall_b <- renderText(bintervall)
     output$konfidenzniveau <- renderText(niveau_percentage)
     
+    output$verbal_erkl <- renderText({ 
+      paste("Der wahre Mittelwert der Stichprobe von ", n, "Werten befindet sich mit einer Wahrscheinlichkeit von",  niveau_percentage, "% innerhalb des Intervalls", aintervall, "bis", bintervall) 
     })
+  
+      })
     observeEvent(input$normierung, {
       if (input$normierung == 1) {
         updateNumericInput(session, "ewert", value = 100)
