@@ -36,10 +36,10 @@ if (interactive()) {
       sliderInput(
         inputId = "n",
         label = "Stichprobengröße:",
-        min = 0,
+        min = 10,
         max = 1000,
         value = 500,
-        step = 100
+        step = 10
       ),
       selectInput(
         inputId = "normierung",
@@ -193,6 +193,10 @@ if (interactive()) {
         paste(niveau_percentage, "%")
       })
       
+
+     
+      
+      
       output$berech_erkl <- renderUI({
         tagList(
           p(
@@ -203,10 +207,12 @@ if (interactive()) {
             ".",
             "Die Grenzen dieses Intervalles sollen so ermittelt werden, dass mit",
             strong(niveau_percentage, "%"),
-            "-iger Wahrscheinlichkeit der echte Mittelwert der Grundgesamtheit in ihnen liegt.",
+            "-iger Wahrscheinlichkeit",
+            "(1-\U003B1 = ", niveau, ")",
+            "der echte Mittelwert der Grundgesamtheit in ihnen liegt.",
             br(),
             "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte immer normalverteilt sind und wir die Standardabweichung, in diesem Fall",
-            strong(sd),
+            strong("\U003C3", "=", sd),
             "kennen."
           )
         )
