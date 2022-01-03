@@ -7,6 +7,10 @@
 #    http://shiny.rstudio.com/
 #
 
+install.packages("shiny")
+install.packages("shinydashboard")
+install.packages("shinyjs")
+install.packages("ggplot2")
 library(shiny)
 library(shinyjs)
 library(shinydashboard)
