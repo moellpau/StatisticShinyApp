@@ -83,8 +83,11 @@ if (interactive()) {
       fluidRow (
         box(
           title = "Was sind Konfidenzintervalle?",
-          "Unter Konfidenzintervallen (KI) sind ein statistische Intervalle zu verstehen, mit welchem man besser einschätzen kann, wo beispielsweise wie in diesem Fall der wahre Mittelwert eines Datensatzes liegt. Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen."
-        ),
+          div(HTML("Unter Konfidenzintervallen (KI) sind ein statistische Intervalle zu verstehen, mit welchem man 
+                    besser einschätzen kann, wo beispielsweise wie in diesem Fall der wahre Mittelwert eines Datensatzes liegt. 
+                   Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen.
+                   <br> Die Formeln für die Ober- und Untergrenze sind:"
+        ))),
         box(title = "Erklärung der Berechnung",
             uiOutput("berech_erkl"))
       ),
@@ -129,8 +132,7 @@ if (interactive()) {
             uiOutput("verbal_erkl")),
         box(
           title = "Quellen",
-          "StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021)
-        Schemmel, J. & Ziegler, M. (2020). Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21."
+          uiOutput("quellen")
         )
       )
       
@@ -228,14 +230,25 @@ if (interactive()) {
             "% innerhalb des Intervalls",
             strong(round(aintervall, digits = 2)),
             "bis",
-            strong(round(bintervall, digits = 2)),
-            "."
+            strong(round(bintervall, digits = 2))
           )
         )
       })
       
+      output$quellen <- renderUI({
+        tagList(
+         div(HTML(
+         "<ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
+        <li> Schemmel, J. & Ziegler, M. (2020). Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
+        <li> https://rdrr.io/cran/shinyjs/ </li>
+        <li> https://rstudio.github.io/shinydashboard/structure.html </li>
+        <li> Schmuller, J. (2017): Statistik mir R für Dummies, Weinheim. </li>
+        <li> https://de.wikipedia.org/wiki/Normwertskala </li><ul>"
+          ))
+        )
+      })
+      
     })
-    
     
     click("verteil_mich_button")
     
