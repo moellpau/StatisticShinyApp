@@ -7,14 +7,20 @@
 #    http://shiny.rstudio.com/
 #
 
-install.packages("shiny")
-install.packages("shinydashboard")
-install.packages("shinyjs")
-install.packages("ggplot2")
-library(shiny)
-library(shinyjs)
-library(shinydashboard)
-library(ggplot2)
+## First specify the packages of interest
+packages = c("shiny", "shinyjs",
+             "shinydashboard", "ggplot2")
+
+## Now load or install&load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
 
 if (interactive()) {
   # Define UI for application that draws a histogram
