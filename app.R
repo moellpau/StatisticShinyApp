@@ -43,12 +43,12 @@ if (interactive()) {
       ),
       selectInput(
         inputId = "normierung",
-        label = "Triff eine Vorauswahl der Normierung:",
+        label = "Triff eine Vorauswahl der Normwertskala:",
         c(
-          "IQ (M=100, SD=15)" = 1,
-          "Körpergrößen (M=170, SD=10)" = 2,
-          "Rendite DAX (M=0, SD=0.05)" = 3,
-          "Standard (M=0, SD=1)" = 4
+          "IQ-Norm" = 1,
+          "Leistungsskala der PISA-Studien" = 2,
+          "T-Skala" = 3,
+          "z-Skala" = 4
         )
       ),
       sliderInput(
@@ -64,14 +64,14 @@ if (interactive()) {
         label = "Erwartungswert",
         value = 100,
         min = 0,
-        max = 200
+        max = 500
       ),
       numericInput(
         inputId = "sd",
         label = "Standardabweichung",
         value = 15,
         min = 1,
-        max = 20
+        max = 100
       ),
       actionButton("verteil_mich_button", "Verteile mich!")
     ),
@@ -83,17 +83,7 @@ if (interactive()) {
       fluidRow (
         box(
           title = "Was sind Konfidenzintervalle?",
-          div(HTML("Unter Konfidenzintervallen (KI) sind ein statistische Intervalle zu verstehen, mit welchem man 
-                    besser einschätzen kann, wo beispielsweise wie in diesem Fall der wahre Mittelwert eines Datensatzes liegt. 
-                   Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen.
-                   <br> Die Formeln für die Ober- und Untergrenze sind: <br>
-                   <math> a = X̅ - 
-                    <msub>
-                      <mi>Z</mi>
-                      <mn>1 - α/2</mn>
-                    </msub>
-                   *  <mfrac>σ <msqrt> n </msqrt></mfrac></math>"
-        ))),
+          uiOutput("konfidenz")),
         box(title = "Erklärung der Berechnung",
             uiOutput("berech_erkl"))
       ),
@@ -137,6 +127,12 @@ if (interactive()) {
         box(title = "Verbale Erklärung",
             uiOutput("verbal_erkl")),
         box(
+          title = "Formeln zur Berechnung",
+          uiOutput("formeln")
+        )
+      ),
+      fluidRow (
+        box(
           title = "Quellen",
           uiOutput("quellen")
         )
@@ -168,7 +164,7 @@ if (interactive()) {
       output$datadiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values)) + 
           # draw the histogram with the specified number of bins
-          geom_histogram (binwidth = 5, color = "#3C8DBC", fill = 'grey') + ylab("Häufigkeit") + xlab("Werte")
+          geom_histogram (binwidth = 1, color = "#3C8DBC", fill = 'grey') + ylab("Häufigkeit") + xlab("Werte")
         
         
       })
@@ -200,13 +196,20 @@ if (interactive()) {
       
 
      
-      
+      output$konfidenz <- renderUI({
+        tagList(
+          p("Unter Konfidenzintervallen (KI) sind statistische Intervalle zu verstehen, mit welchem man 
+                    besser einschätzen kann, wo wie in diesem Fall der wahre Mittelwert eines Datensatzes liegt. 
+                   Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen.
+            Für dieses Beispiel zur Berechnung von Konfidenzintervallen können für eine erste Vorauswahl über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normwertskalen wie der IQ-Norm, z-Skala, T-Skala und Leistungsskala der PISA-Studien, die für die  Normierung von psychologischen Tests verwendet werden, festgelegt werden."
+          )
+        )
+      })
       
       output$berech_erkl <- renderUI({
         tagList(
           p(
-            "Für eine erste Vorauswahl können über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normskalen festgelegt werden.
-            Für die Findung und Validierung der Intervalle suchen wir einen Intervall von der Untergrenze",
+            "Für die Findung und Validierung der Intervalle suchen wir einen Intervall von der Untergrenze",
             em("a"),
             "bis zur Obergrenze",
             em("b"),
@@ -215,7 +218,8 @@ if (interactive()) {
             strong(niveau_percentage, "%"),
             "-iger Wahrscheinlichkeit",
             "(1-\U003B1 = ", niveau, ")",
-            "der echte Mittelwert der Grundgesamtheit in ihnen liegt.",
+            "der echte Mittelwert der Grundgesamtheit zwischen ihnen liegt. Denn den wahren Mittelwert können wir nicht ermitteln, da wir nur mit einer Stichprobe von",
+            strong(n), "Werten rechnen.",
             br(),
             "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte immer normalverteilt sind und wir die Standardabweichung, in diesem Fall",
             strong("\U003C3", "=", sd),
@@ -239,11 +243,19 @@ if (interactive()) {
         )
       })
       
+      output$formeln <- renderUI({
+        tagList(
+          p("Die Formeln für die Ober- und Untergrenze sind:",
+            strong(HTML(" a = X̅ - Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>")), "und", strong(HTML("b = X̅ + Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>"))
+          )
+        )
+      })
+      
       output$quellen <- renderUI({
         tagList(
          div(HTML(
          "<ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
-        <li> Schemmel, J. & Ziegler, M. (2020). Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
+        <li> Schemmel, J. & Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
         <li> Rdrr.iO (2022): shinyjs, in: https://rdrr.io/cran/shinyjs/, (Stand: 04.01.2022). </li>
         <li> RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/structure.html, (Stand: 04.01.2022). </li>
         <li> Schmuller, J. (2017): Statistik mit R für Dummies, Weinheim. </li>
@@ -262,12 +274,12 @@ if (interactive()) {
         updateNumericInput(session, "sd", value = 15)
       }
       else if (input$normierung == 2) {
-        updateNumericInput(session, "ewert", value = 170)
-        updateNumericInput(session, "sd", value = 10)
+        updateNumericInput(session, "ewert", value = 500)
+        updateNumericInput(session, "sd", value = 100)
       }
       else if (input$normierung == 3) {
-        updateNumericInput(session, "ewert", value = 0)
-        updateNumericInput(session, "sd", value = 0.05)
+        updateNumericInput(session, "ewert", value = 50)
+        updateNumericInput(session, "sd", value = 10)
       }
       else if (input$normierung == 4) {
         updateNumericInput(session, "ewert", value = 0)
