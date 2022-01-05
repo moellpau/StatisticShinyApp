@@ -133,6 +133,10 @@ if (interactive()) {
       ),
       fluidRow (
         box(
+          title = "Unterschied der beiden Diagramme",
+          uiOutput("unterschied")
+        ),
+        box(
           title = "Quellen",
           uiOutput("quellen")
         )
@@ -149,14 +153,19 @@ if (interactive()) {
       n <- input$n
       ewert <- input$ewert
       sd <- input$sd
+      xsd <- sd / sqrt(input$n)
+      
       x.values <- rnorm(n, ewert, sd)
-      y.values <- dnorm(x.values, ewert, sd)
+      y.values <- dnorm(x.values, ewert, xsd)
+      
       niveau <- input$niveau
       niveau_percentage <- niveau * 100
       alpha <- 1 - niveau
       quantil <- 1 - (alpha / 2)
+      
       z <- qnorm(quantil, 0, 1)
       f <- z * sd / sqrt(n)
+      
       aintervall <- mean(x.values) - f
       bintervall <- mean(x.values) + f
       
@@ -164,23 +173,27 @@ if (interactive()) {
       output$datadiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values)) + 
           # draw the histogram with the specified number of bins
-          geom_histogram (binwidth = 1, color = "#3C8DBC", fill = 'grey') + ylab("Häufigkeit") + xlab("Werte") + geom_line(x = x.values, y = y.values) +
-          geom_vline(aes(xintercept = aintervall), color = "royalblue1") +
-          geom_vline(aes(xintercept = bintervall), color = "red") +
-          geom_area(data = NULL, aes(y = y.values), fill = "#3C8DBC", color = NA, alpha = .3)
-        
+          geom_histogram (aes(y = ..density..), binwidth = 1, fill = 'grey')  + 
+          geom_density(alpha = .2, fill = "#3C8DBC") +
+          geom_vline(aes(xintercept = aintervall), color = "#3D9970")  +
+          geom_vline(aes(xintercept = bintervall), color = "#3D9970") + ylab("Dichte") + xlab("Skala der Normwerte")
         
       })
       output$intervalldiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values, y = y.values)) + 
           geom_line() + labs(x = "Werte", y = NULL) +
           scale_y_continuous(breaks = NULL) +
-          scale_x_continuous(breaks = c(ewert - 2 * sd,
-                                        ewert - sd, ewert,
-                                        ewert + sd, ewert + 2 * sd)) +
-          geom_vline(aes(xintercept = aintervall), color = "royalblue1") +
-          geom_vline(aes(xintercept = bintervall), color = "red") +
-         geom_area(data = NULL, aes(y = y.values), fill = "#3C8DBC", color = NA, alpha = .3)
+          scale_x_continuous(breaks = c(ewert - 2 * xsd,
+                                        ewert - xsd, ewert,
+                                        ewert + xsd, ewert + 2 * sd)) +
+          geom_vline(aes(xintercept = aintervall), color = "#3D9970") +
+          geom_vline(aes(xintercept = bintervall), color = "#3D9970") +
+          geom_area(
+            data = NULL,
+            aes(y = y.values),
+            fill = "#3C8DBC",
+            color = NA,
+            alpha = .3)
         
       })
       
@@ -249,8 +262,15 @@ if (interactive()) {
       
       output$formeln <- renderUI({
         tagList(
-          p("Die Formeln für die Ober- und Untergrenze sind:",
+          p("Um die Berechnungen der Intervallgrenzen nachzuvollziehen, sind hier die Formeln für die Ober- und Untergrenze gegeben:",
             strong(HTML(" a = X̅ - Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>")), "und", strong(HTML("b = X̅ + Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>"))
+          )
+        )
+      })
+      
+      output$unterschied <- renderUI({
+        tagList(
+          p("Hier wird der Unterschied der beiden Diagramme beschrieben tbd"
           )
         )
       })
