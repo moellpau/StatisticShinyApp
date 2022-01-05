@@ -158,6 +158,8 @@ if (interactive()) {
       x.values <- rnorm(n, ewert, sd)
       y.values <- dnorm(x.values, ewert, xsd)
       
+      data <- data.frame(x.values, y.values)
+      
       niveau <- input$niveau
       niveau_percentage <- niveau * 100
       alpha <- 1 - niveau
@@ -169,6 +171,8 @@ if (interactive()) {
       aintervall <- mean(x.values) - f
       bintervall <- mean(x.values) + f
       
+      delta_intervall <- abs(bintervall-aintervall)
+      
       
       output$datadiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values)) + 
@@ -177,24 +181,22 @@ if (interactive()) {
           geom_density(alpha = .2, fill = "#3C8DBC") +
           geom_vline(aes(xintercept = aintervall), color = "#3D9970")  +
           geom_vline(aes(xintercept = bintervall), color = "#3D9970") + ylab("Dichte") + xlab("Skala der Normwerte")
-        
       })
+      
+      
       output$intervalldiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values, y = y.values)) + 
           geom_line() + labs(x = "Werte", y = NULL) +
-          scale_y_continuous(breaks = NULL) +
-          scale_x_continuous(breaks = c(ewert - 2 * xsd,
-                                        ewert - xsd, ewert,
-                                        ewert + xsd, ewert + 2 * sd)) +
+     
           geom_vline(aes(xintercept = aintervall), color = "#3D9970") +
           geom_vline(aes(xintercept = bintervall), color = "#3D9970") +
           geom_area(
-            data = NULL,
-            aes(y = y.values),
-            fill = "#3C8DBC",
-            color = NA,
-            alpha = .3)
-        
+                    data = subset(data, x.values > aintervall
+                          & x.values < bintervall),
+                    aes(y = y.values),
+                    fill = "#3C8DBC",
+                    alpha = .2) +
+          xlim(aintervall-delta_intervall, bintervall+delta_intervall)
       })
       
       
@@ -290,6 +292,7 @@ if (interactive()) {
       
     })
     
+    click("verteil_mich_button")
     click("verteil_mich_button")
     
     observeEvent(input$normierung, {
