@@ -164,7 +164,10 @@ if (interactive()) {
       output$datadiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values)) + 
           # draw the histogram with the specified number of bins
-          geom_histogram (binwidth = 1, color = "#3C8DBC", fill = 'grey') + ylab("Häufigkeit") + xlab("Werte")
+          geom_histogram (binwidth = 1, color = "#3C8DBC", fill = 'grey') + ylab("Häufigkeit") + xlab("Werte") + geom_line(x = x.values, y = y.values) +
+          geom_vline(aes(xintercept = aintervall), color = "royalblue1") +
+          geom_vline(aes(xintercept = bintervall), color = "red") +
+          geom_area(data = NULL, aes(y = y.values), fill = "#3C8DBC", color = NA, alpha = .3)
         
         
       })
@@ -199,9 +202,9 @@ if (interactive()) {
       output$konfidenz <- renderUI({
         tagList(
           p("Unter Konfidenzintervallen (KI) sind statistische Intervalle zu verstehen, mit welchem man 
-                    besser einschätzen kann, wo wie in diesem Fall der wahre Mittelwert eines Datensatzes liegt. 
+                    besser einschätzen kann, wo -wie in diesem Fall- der wahre Mittelwert eines Datensatzes liegt. 
                    Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen.
-            Für dieses Beispiel zur Berechnung von Konfidenzintervallen können für eine erste Vorauswahl über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normwertskalen wie der IQ-Norm, z-Skala, T-Skala und Leistungsskala der PISA-Studien, die für die  Normierung von psychologischen Tests verwendet werden, festgelegt werden."
+            Für dieses Beispiel zur Berechnung von Konfidenzintervallen können für eine erste Vorauswahl über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normwertskalen wie der IQ-Norm, z-Skala, T-Skala und Leistungsskala von PISA-Studien, die für die  Normierung von psychologischen Tests verwendet werden, festgelegt werden."
           )
         )
       })
@@ -209,7 +212,7 @@ if (interactive()) {
       output$berech_erkl <- renderUI({
         tagList(
           p(
-            "Für die Findung und Validierung der Intervalle suchen wir einen Intervall von der Untergrenze",
+            "Für die Findung und Validierung der Intervalle suchen wir ein Intervall von der Untergrenze",
             em("a"),
             "bis zur Obergrenze",
             em("b"),
@@ -218,8 +221,9 @@ if (interactive()) {
             strong(niveau_percentage, "%"),
             "-iger Wahrscheinlichkeit",
             "(1-\U003B1 = ", niveau, ")",
-            "der echte Mittelwert der Grundgesamtheit zwischen ihnen liegt. Denn den wahren Mittelwert können wir nicht ermitteln, da wir nur mit einer Stichprobe von",
-            strong(n), "Werten rechnen.",
+            "der echte Mittelwert der Grundgesamtheit zwischen ihnen liegt. Den wahren Mittelwert der Grundgesamtheit
+            kann nicht ermitteln werden, da nur mit einer Stichprobe von",
+            strong(n), "Werten gerechnet wird.",
             br(),
             "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte immer normalverteilt sind und wir die Standardabweichung, in diesem Fall",
             strong("\U003C3", "=", sd),
