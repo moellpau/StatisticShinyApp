@@ -9,7 +9,7 @@
 
 # Specify the packages of interest
 packages = c("shiny", "shinyjs",
-             "shinydashboard", "ggplot2")
+             "shinydashboard", "ggplot2", "rsconnect")
 
 # Load or install&load all
 package.check <- lapply(
