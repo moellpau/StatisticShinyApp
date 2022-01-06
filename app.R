@@ -196,8 +196,7 @@ if (interactive()) {
             fill = "#3C8DBC",
             alpha = .3
           ) +
-          xlim(aintervall - delta_intervall,
-               bintervall + delta_intervall) +
+          xlim(aintervall - (delta_intervall/2), bintervall + (delta_intervall/2)) +
           geom_segment(aes(
             x = ewert,
             y = 0,
@@ -208,10 +207,41 @@ if (interactive()) {
             aes(
               y = 0,
               xmin = aintervall,
-              xmax = bintervall
-            ),
+              xmax = bintervall),
             height = 0.03 / xsd,
             colour = "black"
+          ) +
+        annotate(
+          geom = "text",
+          x = ewert,
+          y = 0,
+          label = "Erwartungswert",
+          angle = 90,
+          vjust = -0.5,
+          hjust = -1.0,
+          size = 4
+        ) +
+          annotate(
+            geom = "text",
+            x = aintervall,
+            y = 0,
+            label = "Untergrenze",
+            angle = 90,
+            vjust = -1,
+            hjust = -4.0,
+            size = 4,
+            color = "#3D9970"
+          ) +
+          annotate(
+            geom = "text",
+            x = bintervall,
+            y = 0,
+            label = "Obergrenze",
+            angle = 90,
+            vjust = 1.5,
+            hjust = -4.0,
+            size = 4,
+            color = "#3D9970"
           )
       })
       
@@ -261,10 +291,9 @@ if (interactive()) {
             kann nicht ermitteln werden, da nur mit einer Stichprobe von",
             strong(n),
             "Werten gerechnet wird.",
-            br(),
-            "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte normalverteilt sind und wir die Standardabweichung, in diesem Fall",
+            "Dabei ist die Annahme, dass das Intervall symmetrisch und die Werte normalverteilt sind und die Standardabweichung, in diesem Fall",
             strong("\U003C3", "=", sd),
-            "kennen."
+            "bekannt ist."
           )
         )
       })
@@ -275,9 +304,9 @@ if (interactive()) {
           p(
             "Der wahre Erwartungswert \U00B5 der Grundgesamtheit befindet sich mit einer Wahrscheinlichkeit von",
             strong(niveau_percentage),
-            "% innerhalb des Intervalls",
+            "% innerhalb des Intervalls mit der Untergrenze von",
             strong(round(aintervall, digits = 2)),
-            "bis",
+            "bis zur Obergrenze von",
             strong(round(bintervall, digits = 2))
           )
         )
@@ -307,7 +336,7 @@ if (interactive()) {
       output$unterschied <- renderUI({
         tagList(
           p(
-            "Wichtig ist, dass der Unterschied der beiden oben dargestellten Diagramme klar wird. Das Diagramm Datensatz enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.
+            "Für das Gesamtverständnis zu Konfidenzintervallen ist es wichtig, dass der Unterschied der beiden oben dargestellten Diagramme klar wird. Das Diagramm Datensatz enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.
           Mit den grünen Linien sind in diesem Diagramm die Intervallgrenzen des Konfidenzintervalls dargestellt. Das Diagramm Konfidenzintervall bildet die Verteilung der Mittelwerte ab und es werden ebenfalls die Intervallgrenzen ab abgebildet, in denen der wahre Mittelwert zu erwarten ist. Es ist deutlich zu erkennen, dass das Konfidenzintervall bei der Verteilung der Daten enger ist als bei der Verteilung der Mittelwerte.
 "
           )
@@ -319,12 +348,12 @@ if (interactive()) {
         tagList(div(
           HTML(
             "<font size=2><em><ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
-        <li> Schemmel, J./Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
+        <li> Schemmel, J., Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
         <li> Rdrr.iO (2022): shinyjs, in: https://rdrr.io/cran/shinyjs/, (Stand: 04.01.2022). </li>
         <li> RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/, (Stand: 04.01.2022). </li>
         <li> Schmuller, J. (2017): Statistik mit R für Dummies, Weinheim. </li>
         <li> Wikipedia (2022): Normwertskala, in: https://de.wikipedia.org/wiki/Normwertskala, (Stand: 04.01.2022). </li>
-        <li> Fahrmeir, L./Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer. </li></ul></em></font>"
+        <li> Fahrmeir, L., Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer. </li></ul></em></font>"
           )
         ))
       })
