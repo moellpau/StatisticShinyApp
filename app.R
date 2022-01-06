@@ -7,11 +7,11 @@
 #    http://shiny.rstudio.com/
 #
 
-## First specify the packages of interest
+# Specify the packages of interest
 packages = c("shiny", "shinyjs",
              "shinydashboard", "ggplot2")
 
-## Now load or install&load all
+# Load or install&load all
 package.check <- lapply(
   packages,
   FUN = function(x) {
@@ -23,15 +23,13 @@ package.check <- lapply(
 )
 
 if (interactive()) {
-  # Define UI for application that draws a histogram
+  # Define UI for application
   ui <- dashboardPage(
     skin = "blue",
     # Application title
     dashboardHeader(title = "KI Rechner"),
     
-    
-    
-    # Sidebar with a slider input
+    # Sidebar with a inputs
     dashboardSidebar(
       sliderInput(
         inputId = "n",
@@ -76,18 +74,16 @@ if (interactive()) {
       actionButton("verteil_mich_button", "Verteile mich!")
     ),
     
-    # Show a plot of the generated distribution
+    # Dashboard body with text boxes, values boxes and plots
     dashboardBody(
-      
       useShinyjs(),
+      
       fluidRow (
-        box(
-          title = "Was sind Konfidenzintervalle?",
-          uiOutput("konfidenz")),
+        box(title = "Was sind Konfidenzintervalle?",
+            uiOutput("konfidenz")),
         box(title = "Erklärung der Berechnung",
             uiOutput("berech_erkl"))
       ),
-      
       
       fluidRow (
         valueBox(
@@ -109,6 +105,7 @@ if (interactive()) {
           color = "olive"
         )
       ),
+      
       fluidRow(
         box(
           title = "Datensatz der Stichprobe",
@@ -123,33 +120,28 @@ if (interactive()) {
           plotOutput("intervalldiagram"),
         )
       ),
+      
       fluidRow (
         box(title = "Verbale Erklärung",
             uiOutput("verbal_erkl")),
-        box(
-          title = "Formeln zur Berechnung",
-          uiOutput("formeln")
-        )
+        box(title = "Formeln zur Berechnung",
+            uiOutput("formeln"))
       ),
-      fluidRow (
-        box(
-          title = "Unterschied der beiden Diagramme",
-          uiOutput("unterschied")
-        ),
-        box(
-          title = "Quellen",
-          uiOutput("quellen")
-        )
-      )
       
+      fluidRow (
+        box(title = "Unterschied der beiden Diagramme",
+            uiOutput("unterschied")),
+        box(title = "Quellen",
+            uiOutput("quellen"))
+      )
     )
     
   )
   
   # Define server logic required to draw a histogram
   server <- function(input, output, session) {
-    
     observeEvent(input$verteil_mich_button, {
+      #Define variables and calculate borders of konfidenzintervall
       n <- input$n
       ewert <- input$ewert
       sd <- input$sd
@@ -173,21 +165,23 @@ if (interactive()) {
       aintervall <- mean - f
       bintervall <- mean + f
       
-      delta_intervall <- abs(bintervall-aintervall)
+      delta_intervall <- abs(bintervall - aintervall)
       
-      
+      # Render plot of datadiagram
       output$datadiagram <- renderPlot({
-        ggplot(NULL, aes(x = x.values)) + 
+        ggplot(NULL, aes(x = x.values)) +
           # draw the histogram with the specified number of bins
-          geom_histogram (aes(y = ..density..), binwidth = 1, fill = 'grey')  + 
+          geom_histogram (aes(y = ..density..),
+                          binwidth = 1,
+                          fill = 'grey')  +
           geom_density(alpha = .2, fill = "#3C8DBC") +
           geom_vline(aes(xintercept = aintervall), color = "#3D9970")  +
           geom_vline(aes(xintercept = bintervall), color = "#3D9970") + ylab("Dichte") + xlab("Skala der Normwerte")
       })
       
-      
+      # Render plot of intervalldiagram
       output$intervalldiagram <- renderPlot({
-        ggplot(NULL, aes(x = x.values, y = y.values)) + 
+        ggplot(NULL, aes(x = x.values, y = y.values)) +
           scale_y_continuous(breaks = NULL) +
           scale_x_continuous(breaks = c(ewert - 2 * xsd,
                                         ewert - xsd, ewert,
@@ -196,49 +190,59 @@ if (interactive()) {
           geom_vline(aes(xintercept = aintervall), color = "#3D9970") +
           geom_vline(aes(xintercept = bintervall), color = "#3D9970") +
           geom_area(
-                    data = subset(data, x.values > aintervall
+            data = subset(data, x.values > aintervall
                           & x.values < bintervall),
-                    aes(y = y.values),
-                    fill = "#3C8DBC",
-                    alpha = .3) +
-          xlim(aintervall-delta_intervall, bintervall+delta_intervall) +
+            aes(y = y.values),
+            fill = "#3C8DBC",
+            alpha = .3
+          ) +
+          xlim(aintervall - delta_intervall,
+               bintervall + delta_intervall) +
           geom_segment(aes(
             x = ewert,
             y = 0,
             xend = ewert,
             yend = dnorm(ewert, ewert, xsd)
           ), size = 0.5)  +
-          geom_errorbarh(aes(y = 0, xmin = aintervall,
-                             xmax = bintervall),
-                         height = 0.03 / xsd,
-                         colour = "black") 
+          geom_errorbarh(
+            aes(
+              y = 0,
+              xmin = aintervall,
+              xmax = bintervall
+            ),
+            height = 0.03 / xsd,
+            colour = "black"
+          )
       })
       
-      
+      # Render text of value box intervall_a
       output$intervall_a <- renderText({
-        paste("a =",round(aintervall, digits = 2))
+        paste("a =", round(aintervall, digits = 2))
       })
       
+      # Render text of value box intervall_b
       output$intervall_b <- renderText({
         paste("b =", round(bintervall, digits = 2))
       })
       
+      # Render text of value box konfidenzniveau
       output$konfidenzniveau <- renderText({
         paste(niveau_percentage, "%")
       })
       
-
-     
+      # Render UI of box konfidenz
       output$konfidenz <- renderUI({
         tagList(
-          p("Unter Konfidenzintervallen (KI) sind statistische Intervalle zu verstehen, mit welchem man 
-                    besser einschätzen kann, wo - wie in diesem Fall - der wahre Erwartungswert µ eines Datensatzes liegt. 
+          p(
+            "Unter Konfidenzintervallen (KI) sind statistische Intervalle zu verstehen, mit welchem man
+                    besser einschätzen kann, wo - wie in diesem Fall - der wahre Erwartungswert µ eines Datensatzes liegt.
                    Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen.
             Für dieses Beispiel zur Berechnung von Konfidenzintervallen können für eine erste Vorauswahl über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normwertskalen wie der IQ-Norm, z-Skala, T-Skala und Leistungsskala von PISA-Studien, die für die  Normierung von psychologischen Tests verwendet werden, festgelegt werden."
           )
         )
       })
       
+      # Render UI of box berech_erkl
       output$berech_erkl <- renderUI({
         tagList(
           p(
@@ -250,10 +254,13 @@ if (interactive()) {
             "Die Grenzen dieses Intervalles sollen so ermittelt werden, dass mit",
             strong(niveau_percentage, "%"),
             "-iger Wahrscheinlichkeit",
-            "(1-\U003B1 = ", niveau, ")",
+            "(1-\U003B1 = ",
+            niveau,
+            ")",
             "der wahre Erwartungswert der Grundgesamtheit zwischen ihnen liegt. Den wahren Erwartungswert der Grundgesamtheit
             kann nicht ermitteln werden, da nur mit einer Stichprobe von",
-            strong(n), "Werten gerechnet wird.",
+            strong(n),
+            "Werten gerechnet wird.",
             br(),
             "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte normalverteilt sind und wir die Standardabweichung, in diesem Fall",
             strong("\U003C3", "=", sd),
@@ -262,6 +269,7 @@ if (interactive()) {
         )
       })
       
+      # Render UI of box verbal_erkl
       output$verbal_erkl <- renderUI({
         tagList(
           p(
@@ -275,42 +283,58 @@ if (interactive()) {
         )
       })
       
+      # Render UI of box formeln
       output$formeln <- renderUI({
         tagList(
-          p("Um die Berechnungen der Intervallgrenzen nachzuvollziehen, sind hier die Formeln für die Ober- und Untergrenze gegeben:",
-            strong(HTML(" a = X̅ - Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>")), "und", strong(HTML("b = X̅ + Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>"))
+          p(
+            "Um die Berechnungen der Intervallgrenzen nachzuvollziehen, sind hier die Formeln für die Ober- und Untergrenze gegeben:",
+            strong(
+              HTML(
+                " a = X̅ - Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>"
+              )
+            ),
+            "und",
+            strong(
+              HTML(
+                "b = X̅ + Z <sub> 1 - α/2 </sub> * <sup>σ</sup> / <sub>√n</sub>"
+              )
+            )
           )
         )
       })
       
+      # Render UI of box unterschied
       output$unterschied <- renderUI({
         tagList(
-          p("Wichtig ist, dass der Unterschied der beiden oben dargestellten Diagramme klar wird. Das Diagramm Datensatz enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.
+          p(
+            "Wichtig ist, dass der Unterschied der beiden oben dargestellten Diagramme klar wird. Das Diagramm Datensatz enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.
           Mit den grünen Linien sind in diesem Diagramm die Intervallgrenzen des Konfidenzintervalls dargestellt. Das Diagramm Konfidenzintervall bildet die Verteilung der Mittelwerte ab und es werden ebenfalls die Intervallgrenzen ab abgebildet, in denen der wahre Mittelwert zu erwarten ist. Es ist deutlich zu erkennen, dass das Konfidenzintervall bei der Verteilung der Daten enger ist als bei der Verteilung der Mittelwerte.
 "
           )
         )
       })
       
+      # Render UI of box quellen
       output$quellen <- renderUI({
-        tagList(
-         div(HTML(
-         "<font size=2><em><ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
+        tagList(div(
+          HTML(
+            "<font size=2><em><ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
         <li> Schemmel, J./Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
         <li> Rdrr.iO (2022): shinyjs, in: https://rdrr.io/cran/shinyjs/, (Stand: 04.01.2022). </li>
         <li> RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/, (Stand: 04.01.2022). </li>
         <li> Schmuller, J. (2017): Statistik mit R für Dummies, Weinheim. </li>
         <li> Wikipedia (2022): Normwertskala, in: https://de.wikipedia.org/wiki/Normwertskala, (Stand: 04.01.2022). </li>
         <li> Fahrmeir, L./Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer. </li></ul></em></font>"
-          ))
-        )
+          )
+        ))
       })
       
     })
     
-    click("verteil_mich_button")
+    # Click button
     click("verteil_mich_button")
     
+    # Set pre-set values of drop-down
     observeEvent(input$normierung, {
       if (input$normierung == 1) {
         updateNumericInput(session, "ewert", value = 100)
