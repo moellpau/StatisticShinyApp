@@ -181,7 +181,7 @@ if (interactive()) {
       
       # Render plot of intervalldiagram
       output$intervalldiagram <- renderPlot({
-        ggplot(NULL, aes(x = x.values, y = y.values)) +
+        ggplot(data = data, aes(x = x.values, y = y.values)) +
           scale_y_continuous(breaks = NULL) +
           scale_x_continuous(breaks = c(ewert - 2 * xsd,
                                         ewert - xsd, ewert,
