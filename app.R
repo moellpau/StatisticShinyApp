@@ -111,13 +111,13 @@ if (interactive()) {
       ),
       fluidRow(
         box(
-          title = "Datensatz",
+          title = "Datensatz der Stichprobe",
           solidHeader = TRUE,
           status = "primary",
           plotOutput("datadiagram")
         ),
         box(
-          title = "Konfidenzintervall",
+          title = "Konfidenzintervall um den geschätzten Erwartungswert",
           solidHeader = TRUE,
           status = "primary",
           plotOutput("intervalldiagram"),
@@ -168,8 +168,10 @@ if (interactive()) {
       z <- qnorm(quantil, 0, 1)
       f <- z * sd / sqrt(n)
       
-      aintervall <- mean(x.values) - f
-      bintervall <- mean(x.values) + f
+      mean <- mean(x.values)
+      
+      aintervall <- mean - f
+      bintervall <- mean + f
       
       delta_intervall <- abs(bintervall-aintervall)
       
@@ -186,8 +188,11 @@ if (interactive()) {
       
       output$intervalldiagram <- renderPlot({
         ggplot(NULL, aes(x = x.values, y = y.values)) + 
-          geom_line() + labs(x = "Werte", y = NULL) +
-     
+          scale_y_continuous(breaks = NULL) +
+          scale_x_continuous(breaks = c(ewert - 2 * xsd,
+                                        ewert - xsd, ewert,
+                                        ewert + xsd, ewert + 2 * xsd)) +
+          geom_line() + labs(x = "Skala der Normwerte", y = NULL) +
           geom_vline(aes(xintercept = aintervall), color = "#3D9970") +
           geom_vline(aes(xintercept = bintervall), color = "#3D9970") +
           geom_area(
@@ -195,8 +200,18 @@ if (interactive()) {
                           & x.values < bintervall),
                     aes(y = y.values),
                     fill = "#3C8DBC",
-                    alpha = .2) +
-          xlim(aintervall-delta_intervall, bintervall+delta_intervall)
+                    alpha = .3) +
+          xlim(aintervall-delta_intervall, bintervall+delta_intervall) +
+          geom_segment(aes(
+            x = ewert,
+            y = 0,
+            xend = ewert,
+            yend = dnorm(ewert, ewert, xsd)
+          ), size = 0.5)  +
+          geom_errorbarh(aes(y = 0, xmin = aintervall,
+                             xmax = bintervall),
+                         height = 0.03 / xsd,
+                         colour = "black") 
       })
       
       
@@ -217,7 +232,7 @@ if (interactive()) {
       output$konfidenz <- renderUI({
         tagList(
           p("Unter Konfidenzintervallen (KI) sind statistische Intervalle zu verstehen, mit welchem man 
-                    besser einschätzen kann, wo -wie in diesem Fall- der wahre Mittelwert eines Datensatzes liegt. 
+                    besser einschätzen kann, wo - wie in diesem Fall - der wahre Erwartungswert µ eines Datensatzes liegt. 
                    Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen.
             Für dieses Beispiel zur Berechnung von Konfidenzintervallen können für eine erste Vorauswahl über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normwertskalen wie der IQ-Norm, z-Skala, T-Skala und Leistungsskala von PISA-Studien, die für die  Normierung von psychologischen Tests verwendet werden, festgelegt werden."
           )
@@ -236,11 +251,11 @@ if (interactive()) {
             strong(niveau_percentage, "%"),
             "-iger Wahrscheinlichkeit",
             "(1-\U003B1 = ", niveau, ")",
-            "der echte Mittelwert der Grundgesamtheit zwischen ihnen liegt. Den wahren Mittelwert der Grundgesamtheit
+            "der wahre Erwartungswert der Grundgesamtheit zwischen ihnen liegt. Den wahren Erwartungswert der Grundgesamtheit
             kann nicht ermitteln werden, da nur mit einer Stichprobe von",
             strong(n), "Werten gerechnet wird.",
             br(),
-            "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte immer normalverteilt sind und wir die Standardabweichung, in diesem Fall",
+            "Dabei ist die Annahme, dass der Intervall symmetrisch und die Werte normalverteilt sind und wir die Standardabweichung, in diesem Fall",
             strong("\U003C3", "=", sd),
             "kennen."
           )
@@ -250,9 +265,7 @@ if (interactive()) {
       output$verbal_erkl <- renderUI({
         tagList(
           p(
-            "Der wahre Mittelwert der Stichprobe von ",
-            strong(n),
-            "Werten befindet sich mit einer Wahrscheinlichkeit von",
+            "Der wahre Erwartungswert \U00B5 der Grundgesamtheit befindet sich mit einer Wahrscheinlichkeit von",
             strong(niveau_percentage),
             "% innerhalb des Intervalls",
             strong(round(aintervall, digits = 2)),
@@ -272,7 +285,9 @@ if (interactive()) {
       
       output$unterschied <- renderUI({
         tagList(
-          p("Hier wird der Unterschied der beiden Diagramme beschrieben tbd"
+          p("Wichtig ist, dass der Unterschied der beiden oben dargestellten Diagramme klar wird. Das Diagramm Datensatz enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.
+          Mit den grünen Linien sind in diesem Diagramm die Intervallgrenzen des Konfidenzintervalls dargestellt. Das Diagramm Konfidenzintervall bildet die Verteilung der Mittelwerte ab und es werden ebenfalls die Intervallgrenzen ab abgebildet, in denen der wahre Mittelwert zu erwarten ist. Es ist deutlich zu erkennen, dass das Konfidenzintervall bei der Verteilung der Daten enger ist als bei der Verteilung der Mittelwerte.
+"
           )
         )
       })
@@ -280,12 +295,13 @@ if (interactive()) {
       output$quellen <- renderUI({
         tagList(
          div(HTML(
-         "<ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
-        <li> Schemmel, J. & Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
+         "<font size=2><em><ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
+        <li> Schemmel, J./Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
         <li> Rdrr.iO (2022): shinyjs, in: https://rdrr.io/cran/shinyjs/, (Stand: 04.01.2022). </li>
-        <li> RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/structure.html, (Stand: 04.01.2022). </li>
+        <li> RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/, (Stand: 04.01.2022). </li>
         <li> Schmuller, J. (2017): Statistik mit R für Dummies, Weinheim. </li>
-        <li> Wikipedia (2022): Normwertskala, in: https://de.wikipedia.org/wiki/Normwertskala, (Stand: 04.01.2022). </li><ul>"
+        <li> Wikipedia (2022): Normwertskala, in: https://de.wikipedia.org/wiki/Normwertskala, (Stand: 04.01.2022). </li>
+        <li> Fahrmeir, L./Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer. </li></ul></em></font>"
           ))
         )
       })
