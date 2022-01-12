@@ -150,7 +150,7 @@ server <- function(input, output, session) {
     quantil <- 1 - (alpha / 2)
     
     z <- qnorm(quantil, 0, 1)
-    f <- z * sd / sqrt(n)
+    f <- z * xsd
     
     mean <- mean(x.values)
     
@@ -268,11 +268,17 @@ server <- function(input, output, session) {
     output$berech_erkl <- renderUI({
       tagList(
         p(
-          "Für die Findung und Validierung der Intervalle suchen wir ein Intervall von der Untergrenze",
+          "Für die Berechnung wurden Daten normalverteilt über die Funktion", 
+          em("rnorm"),
+          "generiert.",
+          "Nun soll als",
+          strong("Konfidenzintervall"),
+          "ein Intervall von der Untergrenze",
           em("a"),
           "bis zur Obergrenze",
           em("b"),
-          ".",
+          "gefunden werden.",
+          br(),
           "Die Grenzen dieses Intervalles sollen so ermittelt werden, dass mit",
           strong(niveau_percentage, "%"),
           "-iger Wahrscheinlichkeit",
@@ -328,9 +334,15 @@ server <- function(input, output, session) {
     output$unterschied <- renderUI({
       tagList(
         p(
-          "Für das Gesamtverständnis zu Konfidenzintervallen ist es wichtig, dass der Unterschied der beiden oben dargestellten Diagramme klar wird. Das Diagramm Datensatz enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.
-        Mit den grünen Linien sind in diesem Diagramm die Intervallgrenzen des Konfidenzintervalls dargestellt. Das Diagramm Konfidenzintervall bildet die Verteilung der Mittelwerte ab und es werden ebenfalls die Intervallgrenzen ab abgebildet, in denen der wahre Mittelwert zu erwarten ist. Es ist deutlich zu erkennen, dass das Konfidenzintervall bei der Verteilung der Daten enger ist als bei der Verteilung der Mittelwerte.
-"
+          "Für das Gesamtverständnis zu Konfidenzintervallen ist es wichtig, dass der Unterschied der beiden oben dargestellten Diagramme klar wird.",
+          br(),
+          "Das Diagramm", 
+          em("Datensatz der Stichprobe"),
+          "enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung.",
+          "Mit den grünen Linien sind in diesem Diagramm die Intervallgrenzen des Konfidenzintervalls dargestellt.",
+          "Das Diagramm",
+          em("Konfidenzintervall um den geschätzten Erwartungswert"),
+          "bildet die Verteilung der Mittelwerte ab. Es werden ebenfalls die Intervallgrenzen abgebildet, in denen der wahre Mittelwert zu erwarten ist. Es ist deutlich zu erkennen, dass das Konfidenzintervall bei der Verteilung der Daten enger ist als bei der Verteilung der Mittelwerte."
         )
       )
     })
@@ -339,13 +351,15 @@ server <- function(input, output, session) {
     output$quellen <- renderUI({
       tagList(div(
         HTML(
-          "<font size=2><em><ul><li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
-      <li> Schemmel, J., Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
+          "<font size=2><em><ul>
+      <li> Fahrmeir, L., Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer. </li>
       <li> Rdrr.iO (2022): shinyjs, in: https://rdrr.io/cran/shinyjs/, (Stand: 04.01.2022). </li>
       <li> RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/, (Stand: 04.01.2022). </li>
+      <li> Schemmel, J., Ziegler, M. (2020): Der Konfidenzintervall-Rechner: Web-Anwendung zur Berechnung und grafischen Darstellung von Konfidenzintervallen für die testpsychologische Diagnostik. Report Psychologie, 45(1), 16-21. </li>
       <li> Schmuller, J. (2017): Statistik mit R für Dummies, Weinheim. </li>
+      <li>StudyFlix (2021): Konfidenzintervalle, in: https://studyflix.de/statistik/konfidenzintervall-1580, (Stand: 28.12.2021) </li>
       <li> Wikipedia (2022): Normwertskala, in: https://de.wikipedia.org/wiki/Normwertskala, (Stand: 04.01.2022). </li>
-      <li> Fahrmeir, L., Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer. </li></ul></em></font>"
+     </ul></em></font>"
         )
       ))
     })
