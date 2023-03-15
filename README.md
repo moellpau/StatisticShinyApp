@@ -1,24 +1,25 @@
 # StatisticShinyApp
 
 Authors: Friederike Marby and Paula Möller <br>
+Date: 2021-01-12
 
-## Sinn und Zweck der ShinyApp:
-Mithilfe dieser ShinyApp soll ein Verständnis über die Bedeutung und Nutzung von Konfidenzintervallen geschaffen werden. Unter Konfidenzintervallen (KI) sind statistische Intervalle zu verstehen, mit welchem man besser einschätzen kann, wo - wie in diesem Fall - der wahre Erwartungswert µ liegt. Dieses Konzept wird angewendet, da in der Statistik berechnete Werte oft auf der Grundlage einer Stichprobe zustande kommen. Durch die Berechnung von Konfidenzintervallen für den geschätzten Erwartungswert kann dann zum Beispiel die Aussage getroffen werden, dass der wahre Erwartungswert µ der Grundgesamtheit sich mit einer Wahrscheinlichkeit in Höhe des Konfidenzniveaus innerhalb eines bestimmten Intervalls befindet.
+## Purpose of the ShinyApp:
+The aim of this ShinyApp is to create an understanding of the meaning and use of confidence intervals. Confidence intervals (CI) are statistical intervals that can be used to better estimate where - as in this case - the true expected value µ lies. This concept is used because in statistics calculated values are often based on a sample. By calculating confidence intervals for the estimated expected value, it is then possible, for example, to make the statement that the true expected value µ of the population is within a certain interval with a probability equal to the confidence level.
 
-## Bedienung der Anwendung:
-Für dieses Beispiel zur Berechnung von Konfidenzintervallen können für eine erste Vorauswahl über das Drop-Down erste Werte für Erwartungswert und Standardabweichung von Normwertskalen wie der IQ-Norm, z-Skala, T-Skala und Leistungsskala von PISA-Studien, die für die Normierung von psychologischen Tests verwendet werden, festgelegt werden. Des Weiteren können die Werte zur Stichprobengröße und das Konfidenzniveau mittels eines Input Sliders festgelegt werden.
+## Operation of the application:
+For this example of calculating confidence intervals, initial values for the expected value and standard deviation of norm scales such as the IQ norm, z-scale, T-scale and performance scale of PISA studies, which are used for the standardization of psychological tests, can be specified for an initial preselection via the drop-down. Furthermore, the sample size values and confidence level can be specified using an input slider.
 
-## Berechnung der Anwendung:
-Die Berechnung der Konfidenzintervalle in dieser Anwendung erfolgt mithilfe der folgenden Formeln für die Ober- und Untergrenze des Intervalls, da die Standardabweichung in diesem Fall bekannt ist. 
+## Calculation of the application:
+The confidence intervals in this application are calculated using the following formulas for the upper and lower limits of the interval, since the standard deviation is known in this case. 
 [ˉx-z_(1-α/2)  σ/√n  ,ˉx-z_(1-α/2)  σ/√n  ]
 
-## Diagramme der Anwendung:
-Das Diagramm Datensatz der Stichprobe enthält die Verteilung der generierten Werte der Normalverteilung mit der ausgewählten Stichprobengröße, dem angegebenen Erwartungswert und der angegebenen Standardabweichung. Mit den grünen Linien sind in diesem Diagramm die Intervallgrenzen des Konfidenzintervalls dargestellt. Das Diagramm Konfidenzintervall um den geschätzten Erwartungswert bildet die Verteilung der Mittelwerte ab und es werden ebenfalls die Intervallgrenzen ab abgebildet, in denen der wahre Mittelwert zu erwarten ist. Es ist deutlich zu erkennen, dass das Konfidenzintervall bei der Verteilung der Daten enger ist als bei der Verteilung der Mittelwerte.
+## Diagrams of the application:
+The sample data set diagram contains the distribution of the generated values of the normal distribution with the selected sample size, the specified expected value and the specified standard deviation. The green lines in this diagram represent the interval limits of the confidence interval. The diagram Confidence interval around the estimated expected value shows the distribution of the mean values and also the interval limits in which the true mean value is to be expected. It can be clearly seen that the confidence interval is narrower for the distribution of the data than for the distribution of the mean values.
 
-## Link zur Anwendung: 
+## Link to the application: 
 https://friederikema.shinyapps.io/htwmoema/
 
-## Quellen:
+## Sources:
 * Fahrmeir, L., Heumann C., et al. (2010): Statistik – Der Weg zur Datenanalyse. 7. Auflage, Springer.
 * Rdrr.iO (2022): shinyjs, in: https://rdrr.io/cran/shinyjs/, (Stand: 04.01.2022).
 * RStudio (2022): ShinyDashboard, in: https://rstudio.github.io/shinydashboard/, (Stand: 04.01.2022). 
